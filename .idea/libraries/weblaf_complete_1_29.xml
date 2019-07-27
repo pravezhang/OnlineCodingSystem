@@ -1,0 +1,10 @@
+<component name="libraryTable">
+  <library name="weblaf-complete-1.29">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/weblaf-complete-1.29.jar!/" />
+      <root url="jar://$PROJECT_DIR$/lib/mysql-connector-java-8.0.17.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>
