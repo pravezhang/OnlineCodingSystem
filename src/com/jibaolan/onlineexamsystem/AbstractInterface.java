@@ -14,6 +14,10 @@ public abstract class AbstractInterface {
     public abstract void setUserInterface();
     public void setWindowAndShow(){
         //完毕，打包
+        try {
+            UIManager.setLookAndFeel("javax.swing.plaf.nimbus.NimbusLookAndFeel");
+        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ignored) {
+        }
         window.pack();
         //设置居中显示
         Dimension windowSize=window.getSize();

@@ -24,25 +24,27 @@ public class StudentLogin extends AbstractInterface {
 
     @Override
     public void setUserInterface(){
-        final JPanel layout0=new JPanel(/*new GridBagLayout()*/);//两部分，上面是图，下面是登陆界面
-        final BoxLayout pL=new BoxLayout(layout0,BoxLayout.Y_AXIS);
-        layout0.setLayout(pL);
-        window.add(layout0);
+        // panel0 作为window的唯一组件，承接所有内容组件，布局均为BoxLayout。
+        // panel0 里按需要设置为竖向布局或者横向 【一般为竖向】
+        // 在panel0里放置所有其他元素
+
+        final JPanel panel0=new JPanel();//两部分，上面是图，下面是登陆界面
+        final BoxLayout layout0=new BoxLayout(panel0,BoxLayout.Y_AXIS);
+        panel0.setLayout(layout0);
         final JPanel boxJ=new JPanel();
-        boxJ.setPreferredSize(new Dimension(400,350));
         final Container boxContainer=new Container();
-        final BoxLayout bl=new BoxLayout(boxContainer,BoxLayout.Y_AXIS);
-        boxContainer.setLayout(bl);
+        final BoxLayout layout11=new BoxLayout(boxContainer,BoxLayout.Y_AXIS);
+        boxContainer.setLayout(layout11);
         boxJ.add(boxContainer);
-        layout0.add(
+        panel0.add(
                 new JImage(RESOURCES_FOLDER +"/login_title_student.jpg",400,250).load()
         );
-        layout0.add(boxJ);
+        panel0.add(boxJ);
         final JTextField studentidTEXT=new JTextField();
-        studentidTEXT.setFont(new Font(null,Font.BOLD,15));
+        studentidTEXT.setFont(new Font(null,Font.BOLD,20));
         studentidTEXT.setPreferredSize(new Dimension(200,40));
         final JPasswordField passwordTEXT=new JPasswordField();
-        passwordTEXT.setFont(new Font(null,Font.BOLD,15));
+        passwordTEXT.setFont(new Font(null,Font.BOLD,20));
         passwordTEXT.setPreferredSize(new Dimension(200,40));
         final JButton login=new JButton("登陆");
         login.addMouseListener(new MouseAdapter() {
@@ -75,12 +77,11 @@ public class StudentLogin extends AbstractInterface {
                                     rs.getString("NAME")};
                             StudentExamList.main(userdata);
                             window.dispose();
-                            System.out.println(rs.getString("SID")+","+rs.getString("DEPT"));
                         }
                         rs.close();
                         dbc.close();
                     } catch (Exception e1) {
-                        e1.printStackTrace();
+                        SundryFunction.Message("错误","数据库连接失败，请重试！",0);
                     }
                 });
                 net.start();
@@ -97,10 +98,9 @@ public class StudentLogin extends AbstractInterface {
         boxContainer.add(passwordTEXT);
         boxContainer.add(Box.createVerticalStrut(30));
         boxContainer.add(buttonP);
-        try {
-            UIManager.setLookAndFeel("com.alee.laf.WebLookAndFeel");
-        } catch (ClassNotFoundException | InstantiationException | IllegalAccessException | UnsupportedLookAndFeelException ignored) {
+        boxContainer.add(Box.createVerticalStrut(50));
 
-        }
+        // add panel0 to window .
+        window.add(panel0);
     }
 }
