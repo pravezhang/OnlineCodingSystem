@@ -7,8 +7,7 @@ import com.jibaolan.onlineexamsystem.Utils.SundryFunction;
 
 import javax.swing.*;
 import java.awt.*;
-import java.awt.event.MouseAdapter;
-import java.awt.event.MouseEvent;
+import java.awt.event.*;
 import java.sql.ResultSet;
 
 import static com.jibaolan.onlineexamsystem.Utils.SundryFunction.RESOURCES_FOLDER;
@@ -50,41 +49,24 @@ public class StudentLogin extends AbstractInterface {
         login.addMouseListener(new MouseAdapter() {
             @Override
             public void mouseClicked(MouseEvent e) {
-                login.setEnabled(false);
-                String studentid=studentidTEXT.getText();
-                String password=new String(passwordTEXT.getPassword());
-                if(studentid.length()<1 || password.length()<1){
-                    JOptionPane.showMessageDialog(null, "学号或密码格式不正确！", "错误",JOptionPane.ERROR_MESSAGE);
-                    login.setEnabled(true);
-                    return;
-                }
-                Thread net=new Thread(() -> {
-                    String sql="SELECT * FROM STUDENTS WHERE SID='"+studentid+"' AND PWD='"+ Encrypt.MD5(password)+"'";
-                    try {
-                        DataBaseConnection dbc=new DataBaseConnection();
-                        ResultSet rs=dbc.Query(sql);
-                        if(!rs.next()){
-                            JOptionPane.showMessageDialog(null, "", "",JOptionPane.ERROR_MESSAGE);
-                            rs.close();
-                            dbc.close();
-                            login.setEnabled(true);
-                        }else{
-                            SundryFunction.Message("提示","验证成功！",1);
-                            String[] userdata={"LOGIN SUCCESS",
-                                    rs.getString("SID"),
-                                    rs.getString("MAJOR"),
-                                    rs.getString("CLAS"),
-                                    rs.getString("NAME")};
-                            StudentExamList.main(userdata);
-                            window.dispose();
-                        }
-                        rs.close();
-                        dbc.close();
-                    } catch (Exception e1) {
-                        SundryFunction.Message("错误","数据库连接失败，请重试！",0);
-                    }
-                });
-                net.start();
+                attemptLogin(login,studentidTEXT,passwordTEXT);
+            }
+        });
+        studentidTEXT.setText("学号");
+        studentidTEXT.addMouseListener(new MouseAdapter() {
+            @Override
+            public void mouseClicked(MouseEvent e) {
+                studentidTEXT.setText("");
+                studentidTEXT.removeMouseListener(studentidTEXT.getMouseListeners()[0]);
+            }
+        });
+
+
+        passwordTEXT.addKeyListener(new KeyAdapter() {
+            @Override
+            public void keyTyped(KeyEvent e) {
+                if(e.getKeyChar()=='\n')
+                    attemptLogin(login,studentidTEXT,passwordTEXT);
             }
         });
         login.setFont(new Font(null,Font.BOLD,20));
@@ -100,7 +82,47 @@ public class StudentLogin extends AbstractInterface {
         boxContainer.add(buttonP);
         boxContainer.add(Box.createVerticalStrut(50));
 
-        // add panel0 to window .
+        // add panel0 to window
         window.add(panel0);
     }
+
+    private void attemptLogin(JButton login,JTextField studentidTEXT,JPasswordField passwordTEXT){
+
+        login.setEnabled(false);
+        String studentid=studentidTEXT.getText();
+        String password=new String(passwordTEXT.getPassword());
+        if(studentid.length()<1 || password.length()<1){
+            JOptionPane.showMessageDialog(null, "学号或密码格式不正确！", "错误",JOptionPane.ERROR_MESSAGE);
+            login.setEnabled(true);
+            return;
+        }
+        Thread net=new Thread(() -> {
+            String sql="SELECT * FROM STUDENTS WHERE SID='"+studentid+"' AND PWD='"+ Encrypt.MD5(password)+"'";
+            try {
+                DataBaseConnection dbc=new DataBaseConnection();
+                ResultSet rs=dbc.Query(sql);
+                if(!rs.next()){
+                    JOptionPane.showMessageDialog(null, "", "",JOptionPane.ERROR_MESSAGE);
+                    rs.close();
+                    dbc.close();
+                    login.setEnabled(true);
+                }else{
+                    SundryFunction.Message("提示","验证成功！",1);
+                    String[] userdata={"LOGIN SUCCESS",
+                            rs.getString("SID"),
+                            rs.getString("MAJOR"),
+                            rs.getString("CLAS"),
+                            rs.getString("NAME")};
+                    StudentExamList.main(userdata);
+                    window.dispose();
+                }
+                rs.close();
+                dbc.close();
+            } catch (Exception e1) {
+                SundryFunction.Message("错误","数据库连接失败，请重试！",0);
+            }
+        });
+        net.start();
+    }
+
 }
